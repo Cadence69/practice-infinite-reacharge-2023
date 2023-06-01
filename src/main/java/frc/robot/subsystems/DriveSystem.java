@@ -7,9 +7,13 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static frc.robot.Constants.DriveConstants.*;
 
 
 public class DriveSystem extends SubsystemBase {
@@ -24,17 +28,30 @@ public class DriveSystem extends SubsystemBase {
   /** Creates a new DriveSystem. */
   public DriveSystem() {
      
-    frontLeft = new CANSparkMax(0, MotorType.kBrushless);
-    frontRight = new CANSparkMax(0, MotorType.kBrushless);
-    backLeft = new CANSparkMax(0, MotorType.kBrushless);
-    backRight = new CANSparkMax(0, MotorType.kBrushless);
+    frontLeft = new CANSparkMax(FRONTLEFT, MotorType.kBrushless);
+    frontRight = new CANSparkMax(FRONTRIGHT, MotorType.kBrushless);
+    backLeft = new CANSparkMax(BACKLEFT, MotorType.kBrushless);
+    backRight = new CANSparkMax(BACKRIGHT, MotorType.kBrushless);
 
     mecanumDrive = new MecanumDrive(frontLeft, backRight, frontRight, backLeft);
 
   }
 
-  public CommandBase drivecommand(){
+  public CommandBase driveWithJoystick(Joystick joy){
+    return runEnd(
 
+    () -> {
+      double ySpeed = MathUtil.applyDeadband(joy.getY(), 0.15);
+      double xSpeed = MathUtil.applyDeadband(joy.getX(), 0.15);
+      double rotation = MathUtil.applyDeadband(joy.getZ(), 0.15);
+
+      mecanumDrive.driveCartesian(ySpeed, xSpeed, rotation);
+    },
+
+    () -> {
+      mecanumDrive.driveCartesian(0, 0, 0);
+      }
+    );
   }
 
   public void drive () {
