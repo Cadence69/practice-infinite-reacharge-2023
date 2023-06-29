@@ -33,7 +33,10 @@ public class DriveSystem extends SubsystemBase {
     backLeft = new CANSparkMax(BACKLEFT, MotorType.kBrushless);
     backRight = new CANSparkMax(BACKRIGHT, MotorType.kBrushless);
 
-    mecanumDrive = new MecanumDrive(frontLeft, backRight, frontRight, backLeft);
+    frontRight.setInverted(true);
+    backLeft.setInverted(false);
+    backRight.setInverted(true);
+    mecanumDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
 
   }
 
@@ -45,7 +48,7 @@ public class DriveSystem extends SubsystemBase {
       double xSpeed = MathUtil.applyDeadband(joy.getX(), 0.15);
       double rotation = MathUtil.applyDeadband(joy.getZ(), 0.15);
 
-      mecanumDrive.driveCartesian(ySpeed, xSpeed, rotation);
+      mecanumDrive.driveCartesian(-xSpeed, ySpeed, rotation);
     },
 
     () -> {
