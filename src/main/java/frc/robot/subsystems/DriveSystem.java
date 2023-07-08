@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -25,6 +27,9 @@ public class DriveSystem extends SubsystemBase {
 
   private MecanumDrive mecanumDrive;
 
+  private AHRS NavX;
+  
+
   /** Creates a new DriveSystem. */
   public DriveSystem() {
      
@@ -38,6 +43,7 @@ public class DriveSystem extends SubsystemBase {
     backRight.setInverted(true);
     mecanumDrive = new MecanumDrive(frontLeft, backLeft, frontRight, backRight);
 
+    NavX = new AHRS();
   }
 
   public CommandBase driveWithJoystick(Joystick joy){
@@ -57,11 +63,13 @@ public class DriveSystem extends SubsystemBase {
     );
   }
 
-  public void drive () {
-    frontLeft.set(.5);
-    backLeft.set(.5);
-    frontRight.set(.5);
-    backRight.set(.5);
+
+  public void zeroGyro() {
+    NavX.zeroYaw();
+  }
+
+  public void drive (double xSpeed, double ySpeed, double rotation) {
+    mecanumDrive.driveCartesian(xSpeed, ySpeed, rotation);
   }
 
   @Override
@@ -69,4 +77,9 @@ public class DriveSystem extends SubsystemBase {
     // This method will be called once per scheduler run
 
   }
+
+  public double getGyro() {
+      return NavX.getAngle();
+  }
+
 }
